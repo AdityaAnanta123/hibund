@@ -7,16 +7,27 @@ exports.updateUser = async (req, res) => {
 
   try {
     // Temukan pengguna berdasarkan id
-    const user = await User.findByIdAndUpdate(userId, {
-      username,
-      email,
-      phone,
-      password: await bcrypt.hash(password, 10), // Hash password baru jika ada
-    }, { new: true }); // Mengembalikan dokumen yang sudah diperbarui
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    // Perbarui data pengguna
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+
+    if (password) {
+      user.password = await bcrypt.hash(password, 10);
+    }
+
+    // Jika ada file yang diunggah, perbarui avatar
+    if (req.file) {
+      user.avatar = req.file.path;
+    }
+
+    await user.save();
 
     res.status(200).json({ message: 'User updated successfully', user });
   } catch (error) {

@@ -155,7 +155,7 @@ exports.verify = async (req, res) => {
 // Login success function
 exports.loginSuccess = (req, res) => {
   if (req.user) {
-    const { googleId, username, email } = req.user;
+    const { googleId, username, email, avatar } = req.user; // Ambil avatar dari data pengguna
 
     // Simpan data pengguna ke MongoDB dengan nilai default untuk phone dan password
     const newUser = new User({
@@ -164,7 +164,8 @@ exports.loginSuccess = (req, res) => {
       email,
       password: "", // Nilai default untuk password
       phone: "", // Nilai default untuk phone
-      isVerified: true,
+      isVerified: true, // Set isVerified to true
+      avatar // Tambahkan avatar dari data pengguna Google
     });
 
     newUser.save()
@@ -183,7 +184,6 @@ exports.loginSuccess = (req, res) => {
     res.status(403).json({ error: true, message: "Not Authorized" });
   }
 };
-
 
 
 // Login failed function
